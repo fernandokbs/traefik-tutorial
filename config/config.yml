@@ -1,0 +1,13 @@
+http:
+    routers:
+      apache:
+        rule: "Host(`real.app.test`)"
+        service: apache-service
+    
+    services:
+      apache-service:
+        loadBalancer:
+          servers:
+          - url: "http://172.20.242.121/"
+          - url: "http://172.20.250.50/"
+            

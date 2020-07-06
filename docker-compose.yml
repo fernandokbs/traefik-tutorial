@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  reverse-proxy:
+    image: traefik:v2.1
+    container_name: proxy
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "443:443"
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock 
+      - ./traefik.yml:/traefik.yml
+      - ./acme.json:/acme.json
+
+  nginx:
+    image: nginx
+    container_name: nginx
+    labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.nginx.rule=Host(`nginx.fernandok8s.com`)"
+        - "traefik.http.routers.nginx.tls.certresolver=mysolver"
+        - "traefik.http.routers.nginx.entrypoints=websecure"
+  
+  apache:
+    image: httpd
+    container_name: apache
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.apache.rule=Host(`apache.fernandok8s.com`)"
+      - "traefik.http.routers.apache.tls.certresolver=mysolver"
+      - "traefik.http.routers.apache.entrypoints=websecure"
